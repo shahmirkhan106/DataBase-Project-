@@ -1,0 +1,29 @@
+<h1>Admin Dashboard</h1>
+
+<h2>Add Course</h2>
+<form method="POST" action="/add-course">
+    Course ID: <input type="text" name="course_id" required>
+    Title: <input type="text" name="title" required>
+    <button type="submit">Add</button>
+</form>
+
+<h2>Add Pre-requisite</h2>
+<form method="POST" action="/add-prereq">
+    Course:
+    <select name="course_id">
+        {% for course in courses %}
+            <option value="{{ course[1] }}">{{ course[2] }}</option>
+        {% endfor %}
+    </select>
+    Pre-requisite:
+    <select name="prereq_id">
+        {% for course in courses %}
+            <option value="{{ course[1] }}">{{ course[2] }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Add Pre-req</button>
+</form>
+
+<h2>Generate Timetable</h2>
+<a href="/generate-timetable">Generate</a>
+

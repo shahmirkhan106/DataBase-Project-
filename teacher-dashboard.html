@@ -1,0 +1,11 @@
+<h1>Teacher Dashboard</h1>
+
+<form method="POST" action="/select-teach-course">
+    <select name="course_id" required>
+        {% for course in courses %}
+            <option value="{{ course[1] }}">{{ course[2] }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Select Course</button>
+</form>
+
