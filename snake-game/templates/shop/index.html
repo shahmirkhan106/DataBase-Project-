@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Shop - Snake Game{% endblock %}
+
+{% block top_right_tools %}
+<div class="points-chip">
+    Available score points: <span>{{ balance }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="market-banner">
+    <div class="market-info">
+        <h2>THE DATA MARKET</h2>
+        <p>Upgrade your digital entity with specialized power-ups and premium cosmetic modifications from the Snake OS central archives.</p>
+    </div>
+    <div class="market-stats">
+        <div class="stat-box">
+            <div class="stat-label">Score Multiplier</div>
+            <div class="stat-val" style="color: var(--text-main);">x1.5</div>
+        </div>
+        <div class="stat-box cyan">
+            <div class="stat-label">Premium Status</div>
+            <div class="stat-val" style="color: var(--text-main);">ACTIVE</div>
+        </div>
+    </div>
+</section>
+
+<section class="shop-layout">
+    <div>
+        <h3 class="section-title"><i class="fa-solid fa-bolt"></i> POWER-UPS</h3>
+        <div class="shop-grid">
+            {% for item in items if not item['item_name'].startswith('Snake Color:') %}
+            <article class="item-card">
+                <div class="item-header">
+                    <div class="item-icon">
+                        {% if 'Speed' in item['item_name'] %}
+                        <i class="fa-solid fa-gauge-high"></i>
+                        {% elif 'Magnet' in item['item_name'] %}
+                        <i class="fa-solid fa-magnet"></i>
+                        {% elif 'Shield' in item['item_name'] %}
+                        <i class="fa-solid fa-shield"></i>
+                        {% else %}
+                        <i class="fa-solid fa-sun"></i>
+                        {% endif %}
+                    </div>
+                    <div class="item-badge">Power-Up</div>
+                </div>
+                <div class="item-title">{{ item['item_name']|upper }}</div>
+                <div class="item-desc">{{ item['description'] }}</div>
+                <div class="item-footer">
+                    <div class="item-price">{{ item['price'] }} <span>PTS</span></div>
+                    <form method="POST" action="{{ url_for('shop.buy_item') }}" class="buy-form" style="display:flex;">
+                        <input type="hidden" name="item_id" value="{{ item['id'] }}">
+                        <div class="qty-input">
+                            <button type="button" onclick="this.nextElementSibling.stepDown()">-</button>
+                            <input type="number" name="quantity" value="1" min="1" max="99" required>
+                            <button type="button" onclick="this.previousElementSibling.stepUp()">+</button>
+                        </div>
+                        <button type="submit" class="btn-buy">BUY</button>
+                    </form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div>
+        <h3 class="section-title cyan"><i class="fa-solid fa-palette"></i> COSMETICS</h3>
+        <div class="cosmetics-list">
+            {% for item in items if item['item_name'].startswith('Snake Color:') %}
+            <article class="cosmetic-card">
+                <div class="cosmetic-img">
+                    <i class="fa-solid fa-snake" style="font-size: 2.5rem; color: {{ item['item_name'].replace('Snake Color: ', '')|lower }};"></i>
+                </div>
+                <div class="cosmetic-info">
+                    <div class="cosmetic-header">
+                        <div class="cosmetic-title">{{ item['item_name'].replace('Snake Color: ', '') }}</div>
+                        <div class="cosmetic-badge">Cosmetic</div>
+                    </div>
+                    <div class="cosmetic-desc">{{ item['description'] }}</div>
+                    <div class="cosmetic-footer">
+                        <div class="cosmetic-price">{{ item['price'] }} pts</div>
+                        <form method="POST" action="{{ url_for('shop.buy_item') }}">
+                            <input type="hidden" name="item_id" value="{{ item['id'] }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn-unlock">UNLOCK</button>
+                        </form>
+                    </div>
+                </div>
+            </article>
+            {% else %}
+            <div style="color: var(--text-muted); padding: 16px;">No cosmetics available.</div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

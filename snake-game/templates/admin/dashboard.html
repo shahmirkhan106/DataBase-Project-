@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - Snake Game{% endblock %}
+{% block content %}
+<section class="card">
+    <h2 class="page-title">Admin Command Center</h2>
+
+    <h3>Users</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user['id'] }}</td>
+                <td>{{ user['username'] }}</td>
+                <td>{{ user['email'] }}</td>
+                <td>{{ user['role'] }}</td>
+                <td>{{ user['created_at'] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">No users found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Top Scores</h3>
+    <ol class="leaderboard">
+        {% for row in top_scores %}
+        <li>{{ row['username'] }} - {{ row['best_score'] }}</li>
+        {% else %}
+        <li>No score data.</li>
+        {% endfor %}
+    </ol>
+</section>
+{% endblock %}

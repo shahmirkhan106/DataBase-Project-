@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Inventory - Snake Game{% endblock %}
+
+{% block top_right_tools %}
+<div class="points-chip">
+    Available score points: <span>{{ balance }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="market-banner" style="margin-bottom: 24px;">
+    <div class="market-info">
+        <h2>CURRENT LOADOUT</h2>
+        <p>Review your owned power-ups and equipped cosmetic modifications.</p>
+        <p class="hint" style="color:var(--accent-cyan); font-size:0.8rem; margin-top:8px;"><i class="fa-solid fa-circle-info"></i> Owned color skins are available from the Play screen skin selector.</p>
+    </div>
+</section>
+
+<section class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Description</th>
+                <th style="text-align:center;">Quantity</th>
+                <th>Acquired</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in inventory_items %}
+            <tr>
+                <td>
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        {% if 'Color' in item['item_name'] %}
+                        <div style="width:32px; height:32px; border-radius:4px; background:rgba(0,229,255,0.1); color:var(--accent-cyan); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-palette"></i></div>
+                        {% else %}
+                        <div style="width:32px; height:32px; border-radius:4px; background:rgba(0,255,102,0.1); color:var(--accent-green); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-bolt"></i></div>
+                        {% endif %}
+                        <div style="font-family:var(--font-heading); font-weight:700;">{{ item['item_name'] }}</div>
+                    </div>
+                </td>
+                <td style="color:var(--text-muted); font-size:0.9rem;">{{ item['description'] }}</td>
+                <td style="text-align:center;">
+                    <span style="background:rgba(255,255,255,0.1); padding:4px 12px; border-radius:4px; font-family:var(--font-heading); font-weight:700;">{{ item['quantity'] }}</span>
+                </td>
+                <td style="color:var(--text-muted); font-size:0.85rem;">{{ item['acquired_at'] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="text-align:center; padding:32px; color:var(--text-muted);">Inventory is empty. <br><br> <a href="{{ url_for('shop.shop_home') }}" class="btn btn-alt">Visit Shop</a></td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

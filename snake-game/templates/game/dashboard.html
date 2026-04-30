@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Snake Game{% endblock %}
+
+{% block content %}
+<section class="dashboard-layout">
+    <div class="main-column">
+        <article class="card hero-card">
+            <p class="subtle">SYSTEM INITIALIZATION</p>
+            <h2 class="page-title">Welcome back, <span class="highlight">{{ session.get('username', 'pilot') }}</span></h2>
+            <p style="color: var(--text-muted); line-height: 1.6; max-width: 600px; margin-bottom: 32px;">Your neural interface is synchronized. The data-sea is waiting for your next insertion. Are you ready to break the high score?</p>
+
+            <div class="kpi-grid">
+                <div class="kpi">
+                    <div class="kpi-label">Personal Record</div>
+                    <div class="kpi-value green">{{ high_score }} <span style="font-size:0.5em; color:var(--text-muted)">PTS</span></div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Global Rank</div>
+                    <div class="kpi-value cyan">#1</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi-label">Status</div>
+                    <div class="kpi-value" style="color: var(--text-main);">
+                        {% if last_game %}{{ last_game['status']|upper }}{% else %}OPERATIONAL{% endif %}
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="table-container">
+            <div class="table-header-row">
+                <h3><i class="fa-solid fa-trophy" style="color:var(--accent-green); margin-right:8px;"></i> TOP 10 LEADERBOARD</h3>
+                <a href="{{ url_for('game.leaderboard') }}" style="color:var(--accent-cyan); font-size:0.85rem; border:1px dashed var(--accent-cyan); padding:4px 8px; border-radius:4px;">View Full Rank</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Pilot</th>
+                        <th>Energy</th>
+                        <th style="text-align: right;">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in leaderboard[:3] %}
+                    <tr {% if row['username'] == session.get('username') %}class="highlight-row"{% endif %}>
+                        <td class="rank-col">{% if loop.index < 10 %}0{{ loop.index }}{% else %}{{ loop.index }}{% endif %}</td>
+                        <td class="pilot-col">
+                            <div style="width:24px; height:24px; background:#1e293b; border-radius:4px;"></div>
+                            <span>{{ row['username']|upper }}</span>
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:4px;">
+                                <div style="width:12px; height:8px; background:var(--accent-green);"></div>
+                                <div style="width:12px; height:8px; background:var(--accent-green);"></div>
+                                <div style="width:12px; height:8px; background:var(--accent-green);"></div>
+                                <div style="width:12px; height:8px; background:rgba(0,255,102,0.2);"></div>
+                            </div>
+                        </td>
+                        <td class="score-col" style="color:var(--accent-green);">{{ row['best_score'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No scores yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </article>
+    </div>
+
+    <div class="side-column">
+        <a href="{{ url_for('game.play') }}" class="card play-now-card" style="margin-bottom: 24px; display:block;">
+            <i class="fa-solid fa-play"></i>
+            <h2>PLAY NOW</h2>
+            <p>CONNECT TO GAME GRID</p>
+        </a>
+
+        <a href="{{ url_for('shop.shop_home') }}" class="shop-card" style="text-decoration:none; margin-top:0;">
+            <div style="display:flex; align-items:center; gap:16px;">
+                <div class="shop-icon-wrap">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                </div>
+                <div class="shop-text">
+                    <h3>VISIT SHOP</h3>
+                    <p>New Items Available</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-top:24px;">
+            <div class="card" style="padding:16px; margin-bottom:0;">
+                <i class="fa-solid fa-bolt" style="color:var(--accent-cyan); font-size:1.2rem; margin-bottom:12px;"></i>
+                <div style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700;">2.4x</div>
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Average Speed</div>
+            </div>
+            <div class="card" style="padding:16px; margin-bottom:0;">
+                <i class="fa-solid fa-skull" style="color:#ff8f8f; font-size:1.2rem; margin-bottom:12px;"></i>
+                <div style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700;">14</div>
+                <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Total Crashes</div>
+            </div>
+        </div>
+
+        <article class="card" style="margin-top:24px; position:relative; overflow:hidden;">
+            <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 100% 100%, rgba(0,255,102,0.05), transparent); pointer-events:none;"></div>
+            <div class="subtle" style="margin-bottom:16px;">CURRENT LOADOUT</div>
+            <div style="display:flex; align-items:center; gap:16px;">
+                <div style="width:48px; height:48px; background:rgba(0,0,0,0.4); border:1px solid var(--border-light); border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                    <i class="fa-solid fa-cube" style="color:var(--accent-green); font-size:1.5rem;"></i>
+                </div>
+                <div>
+                    <div style="font-family:var(--font-heading); font-weight:700; font-size:1.1rem;">NEON CORE SKIN</div>
+                    <div style="font-size:0.85rem; color:var(--text-muted);">Legendary Rarity</div>
+                </div>
+            </div>
+        </article>
+    </div>
+</section>
+{% endblock %}

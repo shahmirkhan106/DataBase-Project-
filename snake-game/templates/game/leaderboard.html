@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard - Snake Game{% endblock %}
+
+{% block content %}
+<div class="leaderboard-header">
+    <div>
+        <p class="subtle leaderboard-subtle">GLOBAL_RANKINGS</p>
+        <h2 class="page-title leaderboard-title">Hall Of Fame</h2>
+    </div>
+    <div class="season-chip">
+        <span>Season End</span>
+        <strong>12d 04h</strong>
+    </div>
+</div>
+
+{% if leaderboard %}
+<section class="hof-grid">
+    {% for row in leaderboard[:3] %}
+    <article class="hof-card rank-{{ loop.index }}">
+        <div class="hof-rank-tag">#{{ loop.index }}</div>
+        <div class="hof-avatar">{{ row['username'][:1]|upper }}</div>
+        <div class="hof-name">{{ row['username'] }}</div>
+        <div class="hof-role">
+            {% if loop.index == 1 %}Champion{% elif loop.index == 2 %}Runner Up{% else %}Third Place{% endif %}
+        </div>
+        <div class="hof-score">{{ row['best_score'] }}</div>
+    </article>
+    {% endfor %}
+</section>
+{% else %}
+<section class="card">
+    <p class="subtle">No leaderboard data yet. Play a game and submit a score to appear here.</p>
+</section>
+{% endif %}
+
+<article class="table-container leaderboard-table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>User Pilot</th>
+                <th style="text-align: right;">Best Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in leaderboard %}
+            <tr {% if row['username'] == session.get('username') %}class="highlight-row"{% endif %}>
+                {% set rank_num = loop.index %}
+                <td class="rank-col">{% if rank_num < 10 %}0{{ rank_num }}{% else %}{{ rank_num }}{% endif %}</td>
+                <td class="pilot-col">
+                    <div class="pilot-initial">{{ row['username'][:1]|upper }}</div>
+                    <span>{{ row['username']|upper }}
+                        {% if row['username'] == session.get('username') %}
+                        <span class="you-badge">YOU</span>
+                        {% endif %}
+                    </span>
+                </td>
+                <td class="score-col">{{ row['best_score'] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="leaderboard-empty-row">No pilots in ranking yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="leaderboard-footer">
+        Showing {{ leaderboard|length }} pilots
+    </div>
+</article>
+{% endblock %}

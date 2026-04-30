@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Login - Snake Game{% endblock %}
+{% block content %}
+<section class="card auth-card">
+    <div style="text-align:center; margin-bottom: 24px;">
+        <i class="fa-solid fa-share-nodes" style="color:var(--accent-green); font-size:2.5rem; margin-bottom:16px;"></i>
+        <h2 style="margin:0; font-size:1.8rem;">SYSTEM LOGIN</h2>
+        <p class="subtle" style="margin-top:8px;">Authenticate to access the data-sea</p>
+    </div>
+    
+    <form method="POST" style="display:grid; gap:16px;">
+        <div>
+            <label>Username</label>
+            <input type="text" name="username" required>
+        </div>
+        <div>
+            <label>Password</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit" class="btn" style="width:100%; margin-top:8px;">LOGIN <i class="fa-solid fa-arrow-right-to-bracket"></i></button>
+    </form>
+    
+    <p style="text-align:center; margin-top:24px; color:var(--text-muted); font-size:0.9rem;">
+        No account? <a href="{{ url_for('auth.register') }}" style="color:var(--accent-cyan); font-weight:600;">Register here</a>.
+    </p>
+</section>
+{% endblock %}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Snake Game{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% if session.get('user_id') %}
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-share-nodes"></i>
+                <span>SNAKE_OS V1.0</span>
+            </div>
+            <div class="pilot-card">
+                <div class="pilot-avatar">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ session.get('username', 'P') }}&backgroundColor=02110c" alt="avatar">
+                </div>
+                <div class="pilot-info">
+                    <div class="pilot-name">{{ session.get('username', 'pilot')|upper }}</div>
+                    <div class="pilot-rank">Rank: Elite</div>
+                </div>
+            </div>
+            <nav class="side-nav">
+                <a href="{{ url_for('game.dashboard') }}" class="{% if request.endpoint == 'game.dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-border-all"></i> Dashboard
+                </a>
+                <a href="{{ url_for('game.play') }}" class="{% if request.endpoint == 'game.play' %}active{% endif %}">
+                    <i class="fa-solid fa-gamepad"></i> Play
+                </a>
+                <a href="{{ url_for('game.leaderboard') }}" class="{% if request.endpoint == 'game.leaderboard' %}active{% endif %}">
+                    <i class="fa-solid fa-trophy"></i> Leaderboard
+                </a>
+                <a href="{{ url_for('shop.shop_home') }}" class="{% if request.endpoint == 'shop.shop_home' %}active{% endif %}">
+                    <i class="fa-solid fa-cart-shopping"></i> Shop
+                </a>
+                <a href="{{ url_for('shop.inventory') }}" class="{% if request.endpoint == 'shop.inventory' %}active{% endif %}">
+                    <i class="fa-solid fa-box-archive"></i> Inventory
+                </a>
+                {% if session.get('role') == 'admin' %}
+                <a href="{{ url_for('auth.admin_dashboard') }}" class="{% if request.endpoint == 'auth.admin_dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-shield-halved"></i> Admin
+                </a>
+                {% endif %}
+                <div class="nav-spacer"></div>
+                <a href="{{ url_for('auth.logout') }}" class="logout-link">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <div class="content-shell">
+            <header class="topbar shell-topbar">
+                <div class="brand-mobile">SNAKE_OS</div>
+                <nav class="top-nav">
+                    <a href="{{ url_for('game.dashboard') }}" class="{% if request.endpoint == 'game.dashboard' %}active{% endif %}">Dashboard</a>
+                    <a href="{{ url_for('game.play') }}" class="{% if request.endpoint == 'game.play' %}active{% endif %}">Play</a>
+                    <a href="{{ url_for('game.leaderboard') }}" class="{% if request.endpoint == 'game.leaderboard' %}active{% endif %}">Leaderboard</a>
+                    <a href="{{ url_for('shop.shop_home') }}" class="{% if request.endpoint == 'shop.shop_home' %}active{% endif %}">Shop</a>
+                </nav>
+                <div class="top-tools">
+                    {% block top_right_tools %}
+                    {% endblock %}
+                    <button class="icon-btn"><i class="fa-regular fa-user"></i></button>
+                    <button class="icon-btn"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </header>
+            <main class="container shell-main">
+    {% else %}
+    <div class="app-shell no-sidebar">
+        <div class="content-shell">
+            <header class="topbar shell-topbar">
+                <div class="brand">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>SNAKE_OS V1.0</span>
+                </div>
+                <nav class="top-nav">
+                    <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">Login</a>
+                    <a href="{{ url_for('auth.register') }}" class="{% if request.endpoint == 'auth.register' %}active{% endif %}">Register</a>
+                </nav>
+            </header>
+            <main class="container shell-main">
+    {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-list">
+                    {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    {% if session.get('user_id') or not session.get('user_id') %}
+            </main>
+        </div>
+    </div>
+    {% endif %}
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

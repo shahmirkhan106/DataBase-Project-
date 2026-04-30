@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Play - Snake Game{% endblock %}
+
+{% block top_right_tools %}
+<div class="monitor-badge">
+    <div class="anti-cheat-pill">
+        <i class="fa-solid fa-shield-check"></i> ANTI-CHEAT MONITOR ACTIVE
+    </div>
+    <div class="fps-counter">FPS <span id="fps-display">120.0</span></div>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="arena-header-kpis">
+    <article class="kpi">
+        <div class="kpi-label">Current Score</div>
+        <div class="kpi-value green" id="score">0</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Game ID</div>
+        <div class="kpi-value cyan" id="game-id">#SNK-WAIT</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">System Status</div>
+        <div class="kpi-value green" style="display:flex; align-items:center; gap:8px;">
+            <div style="width:8px; height:8px; border-radius:50%; background:var(--accent-green); box-shadow:var(--glow-green);"></div>
+            <span id="game-status">READY</span>
+        </div>
+    </article>
+</section>
+
+<section class="dashboard-layout">
+    <article class="arena-container">
+        <div class="arena-coords" id="coords-display">X_COORD: 000.00 &nbsp;&nbsp; Y_COORD: 000.00</div>
+        <div class="arena-watermark">ARENA</div>
+        <canvas id="gameCanvas" width="500" height="500"></canvas>
+        <div class="arena-encryption">ENCRYPTION: 256-BIT_PULSE</div>
+    </article>
+
+    <div class="operations-panel">
+        <article class="card" style="margin-bottom:0;">
+            <h3>Tactical Skin</h3>
+            <div class="status-row">
+                <select id="skin-picker" class="skin-picker" style="background: rgba(0,255,102,0.05); border-color: var(--accent-green); color: var(--accent-green); font-family: var(--font-heading); font-weight: 700; text-transform: uppercase;">
+                    <option value="classic">Classic Green</option>
+                </select>
+            </div>
+        </article>
+
+        <article class="card" style="margin-bottom:0;">
+            <h3>Operations</h3>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 24px;">
+                <button id="new-game-btn" class="btn" style="width:100%; padding: 16px; font-size: 1.1rem;">
+                    <i class="fa-solid fa-play"></i> NEW GAME
+                </button>
+                <div class="op-grid">
+                    <button id="save-game-btn" class="btn btn-alt">
+                        <i class="fa-solid fa-floppy-disk"></i> SAVE
+                    </button>
+                    <button id="load-game-btn" class="btn btn-alt">
+                        <i class="fa-solid fa-folder-open"></i> LOAD
+                    </button>
+                </div>
+            </div>
+            
+            <button id="end-game-btn" class="btn btn-alt" style="width:100%; border-color:rgba(255,50,50,0.3); color:#ff8f8f;">
+                <i class="fa-regular fa-circle-xmark"></i> END & SUBMIT SCORE
+            </button>
+        </article>
+        
+        <article class="live-data-feed">
+            <div style="color:var(--text-main); margin-bottom:8px;">LIVE DATA FEED</div>
+            <p>CONNECTING TO SERVER SEC_A...</p>
+            <p>PACKET LOSS: 0.00%</p>
+            <p>LATENCY: 14MS</p>
+            <p>SHADER PRE-COMPILATION COMPLETE</p>
+            <p>READY_FOR_INPUT...</p>
+        </article>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/snake.js') }}"></script>
+{% endblock %}
