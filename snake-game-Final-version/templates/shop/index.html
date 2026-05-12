@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Shop – Online Games{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+    <div>
+        <h2 style="font-size:1.3rem; font-weight:700;">Shop</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">Spend your points on skins and power-ups</p>
+    </div>
+    <div class="badge badge-green" style="font-size:0.85rem; padding:6px 14px;">
+        <i class="fa-solid fa-coins"></i> {{ balance }} pts available
+    </div>
+</div>
+
+<div style="display:flex; gap:12px; margin-bottom:24px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+    <a href="{{ url_for('shop.shop_home', game='snake') }}" class="btn btn-sm {% if current_game == 'snake' %}btn-primary{% else %}btn-secondary{% endif %}">🐍 Snake</a>
+    <a href="{{ url_for('shop.shop_home', game='tetris') }}" class="btn btn-sm {% if current_game == 'tetris' %}btn-primary{% else %}btn-secondary{% endif %}" {% if current_game == 'tetris' %}style="background:#7c3aed;border-color:#6d28d9;"{% endif %}>🟦 Tetris</a>
+    <a href="{{ url_for('shop.shop_home', game='hangman') }}" class="btn btn-sm {% if current_game == 'hangman' %}btn-primary{% else %}btn-secondary{% endif %}" {% if current_game == 'hangman' %}style="background:var(--accent-amber);border-color:#b45309;"{% endif %}>🪢 Hangman</a>
+</div>
+
+<div class="shop-items-grid">
+    {% for item in items %}
+    <div class="shop-item-card">
+        <div style="width:40px; height:40px; background:var(--bg-main); border:1px solid var(--border-color); border-radius:10px; display:flex; align-items:center; justify-content:center;">
+            {% if current_game == 'snake' %}
+                <i class="fa-solid fa-star" style="color:var(--accent-green);"></i>
+            {% elif current_game == 'tetris' %}
+                <i class="fa-solid fa-bolt" style="color:#7c3aed;"></i>
+            {% elif current_game == 'hangman' %}
+                <i class="fa-solid fa-lightbulb" style="color:var(--accent-amber);"></i>
+            {% endif %}
+        </div>
+        <div class="item-name">{{ item.item_name }}</div>
+        <div class="item-desc">{{ item.description or 'No description available.' }}</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:4px;">
+            <div class="item-price"><i class="fa-solid fa-coins" style="font-size:0.75em;"></i> {{ item.price }} pts</div>
+            <form action="{{ url_for('shop.buy_item') }}" method="POST">
+                <input type="hidden" name="item_id" value="{{ item.id }}">
+                <button type="submit" class="btn btn-primary btn-sm">Buy</button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <p style="color:var(--text-muted);">No items available for {{ current_game|capitalize }}.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – Snake Game{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero + KPI row ──────────────────────── -->
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+    <div>
+        <h2 style="font-size:1.5rem; font-weight:800; margin:0 0 4px; letter-spacing:-0.02em;">
+            Welcome back, <span style="color:var(--accent-green);">{{ session.get('username', 'Player') }}</span> 👋
+        </h2>
+        <p style="color:var(--text-muted); margin:0; font-size:0.875rem;">Here's a look at your performance stats and the current rankings.</p>
+    </div>
+    <a href="{{ url_for('game.play') }}" class="btn btn-primary" style="padding:10px 20px;">
+        <i class="fa-solid fa-play"></i> Play Now
+    </a>
+</div>
+
+<!-- KPI Grid -->
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px;">
+    <div class="card" style="margin-bottom:0; padding:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="kpi-label">Personal Best</div>
+                <div style="font-size:2rem; font-weight:800; color:var(--accent-green); line-height:1.1; margin-top:6px;">{{ high_score }}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">points</div>
+            </div>
+            <div style="width:38px; height:38px; background:var(--accent-green-dim); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--accent-green); font-size:1rem;">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-bottom:0; padding:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="kpi-label">Global Rank</div>
+                <div style="font-size:2rem; font-weight:800; color:var(--accent-blue); line-height:1.1; margin-top:6px;">#{{ rank }}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">worldwide</div>
+            </div>
+            <div style="width:38px; height:38px; background:var(--accent-blue-dim); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--accent-blue); font-size:1rem;">
+                <i class="fa-solid fa-earth-americas"></i>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-bottom:0; padding:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="kpi-label">Total Games</div>
+                <div style="font-size:2rem; font-weight:800; line-height:1.1; margin-top:6px;">{{ total_games }}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">sessions played</div>
+            </div>
+            <div style="width:38px; height:38px; background:rgba(217,119,6,0.08); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--accent-amber); font-size:1rem;">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-bottom:0; padding:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div class="kpi-label">Avg Score</div>
+                <div style="font-size:2rem; font-weight:800; line-height:1.1; margin-top:6px;">{{ avg_score }}</div>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">per game</div>
+            </div>
+            <div style="width:38px; height:38px; background:rgba(220,38,38,0.06); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--accent-red); font-size:1rem;">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Main 2-col layout ─────────────────────── -->
+<div style="display:grid; grid-template-columns:1fr 340px; gap:20px; align-items:start;">
+
+    <!-- Left column -->
+    <div style="display:flex; flex-direction:column; gap:20px;">
+
+        <!-- Score History Chart -->
+        <div class="card" style="margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <div>
+                    <h3 style="font-size:1rem; font-weight:700; margin:0 0 2px;">Score History</h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Your last {{ recent_scores|length }} games</p>
+                </div>
+                <span class="badge badge-green">{{ total_score }} total pts</span>
+            </div>
+
+            {% if recent_scores %}
+            <!-- Bar chart rendered via CSS -->
+            <div style="display:flex; align-items:flex-end; gap:10px; height:120px; padding:0 4px;">
+                {% set max_s = recent_scores|max if recent_scores else 1 %}
+                {% for s in recent_scores %}
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%;">
+                    <div style="font-size:0.65rem; color:var(--text-muted); font-weight:600;">{{ s }}</div>
+                    <div style="flex:1; width:100%; display:flex; align-items:flex-end;">
+                        <div style="width:100%; height:{{ [(s / max_s * 90)|round|int, 8]|max }}px; background:var(--accent-green); border-radius:4px 4px 0 0; opacity:{{ 0.4 + (loop.index / recent_scores|length) * 0.6 }}; transition:height 0.3s ease;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div style="border-top:1px solid var(--border-color); margin-top:12px; padding-top:10px; display:flex; justify-content:space-between;">
+                <span style="font-size:0.75rem; color:var(--text-muted);">Oldest</span>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Most Recent</span>
+            </div>
+            {% else %}
+            <div style="text-align:center; padding:32px 0; color:var(--text-muted);">
+                <i class="fa-solid fa-chart-bar" style="font-size:2rem; margin-bottom:12px; display:block; opacity:0.3;"></i>
+                <p style="margin:0; font-size:0.875rem;">No score history yet. Play a game to start tracking!</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Performance Insights -->
+        <div class="card" style="margin-bottom:0;">
+            <h3 style="font-size:1rem; font-weight:700; margin:0 0 16px;">Performance Insights</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+
+                <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Score Trend</div>
+                    {% if recent_scores|length >= 2 %}
+                        {% set last = recent_scores[-1] %}
+                        {% set prev = recent_scores[-2] %}
+                        {% if last > prev %}
+                        <div style="color:var(--accent-green); font-weight:700; font-size:1rem;"><i class="fa-solid fa-arrow-trend-up"></i> Improving</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">+{{ last - prev }} pts vs last game</div>
+                        {% elif last < prev %}
+                        <div style="color:var(--accent-red); font-weight:700; font-size:1rem;"><i class="fa-solid fa-arrow-trend-down"></i> Declining</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">{{ last - prev }} pts vs last game</div>
+                        {% else %}
+                        <div style="color:var(--accent-amber); font-weight:700; font-size:1rem;"><i class="fa-solid fa-minus"></i> Steady</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Same as last game</div>
+                        {% endif %}
+                    {% else %}
+                    <div style="color:var(--text-muted); font-size:0.85rem;">Not enough data yet</div>
+                    {% endif %}
+                </div>
+
+                <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px;">Consistency</div>
+                    {% if recent_scores %}
+                        {% set best_r = recent_scores|max %}
+                        {% set pct = ((avg_score / best_r) * 100)|round|int if best_r > 0 else 0 %}
+                        <div style="font-size:1rem; font-weight:700;">{{ pct }}%</div>
+                        <div style="margin-top:6px; background:var(--border-color); border-radius:20px; height:6px; overflow:hidden;">
+                            <div style="height:100%; width:{{ pct }}%; background:var(--accent-green); border-radius:20px;"></div>
+                        </div>
+                        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:6px;">Avg vs personal best</div>
+                    {% else %}
+                    <div style="color:var(--text-muted); font-size:0.85rem;">No data yet</div>
+                    {% endif %}
+                </div>
+
+                <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Best streak</div>
+                    {% if recent_scores %}
+                        {% set above_avg = namespace(count=0) %}
+                        {% for s in recent_scores %}
+                            {% if s > avg_score %}{% set above_avg.count = above_avg.count + 1 %}{% endif %}
+                        {% endfor %}
+                        <div style="font-size:1.2rem; font-weight:700;">{{ above_avg.count }} / {{ recent_scores|length }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">games above average</div>
+                    {% else %}
+                    <div style="color:var(--text-muted); font-size:0.85rem;">No data yet</div>
+                    {% endif %}
+                </div>
+
+                <div style="background:var(--bg-main); border:1px solid var(--border-color); border-radius:8px; padding:14px;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Last session</div>
+                    {% if last_game %}
+                    <div style="font-size:1rem; font-weight:700;">
+                        {{ last_game['current_score'] }} pts
+                    </div>
+                    <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">
+                        <span class="badge {% if last_game['status'] == 'in_progress' %}badge-amber{% else %}badge-green{% endif %}">
+                            {{ last_game['status']|replace('_',' ')|title }}
+                        </span>
+                    </div>
+                    {% else %}
+                    <div style="color:var(--text-muted); font-size:0.85rem;">No games played</div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="table-container" style="margin-bottom:0;">
+            <div class="table-header-row">
+                <h3 style="font-size:0.9rem;"><i class="fa-solid fa-trophy" style="color:var(--accent-amber); margin-right:6px;"></i> Global Top 10</h3>
+                <a href="{{ url_for('game.leaderboard') }}" class="btn btn-secondary btn-sm">Full Board</a>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:56px;">Rank</th>
+                        <th>Player</th>
+                        <th style="text-align:right;">Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in leaderboard %}
+                    <tr {% if row['username'] == session.get('username') %}class="highlight-row"{% endif %}>
+                        <td class="rank-col">
+                            {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+                        </td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ row['username'] }}&backgroundColor=f0fdf4" alt="" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border-color);">
+                                <span style="font-weight:500;">{{ row['username'] }}</span>
+                                {% if row['username'] == session.get('username') %}<span class="badge badge-green">You</span>{% endif %}
+                            </div>
+                        </td>
+                        <td class="score-col">{{ row['best_score'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:24px;">No scores yet. Be the first!</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Right sidebar -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+        <a href="{{ url_for('game.play') }}" class="card play-now-card" style="margin-bottom:0;">
+            <i class="fa-solid fa-play"></i>
+            <h2>Play Now</h2>
+            <p>Start a new game</p>
+        </a>
+
+        <a href="{{ url_for('shop.shop_home') }}" class="shop-card" style="text-decoration:none;">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div class="shop-icon-wrap"><i class="fa-solid fa-bag-shopping"></i></div>
+                <div class="shop-text"><h3>Shop</h3><p>Skins & Power-ups</p></div>
+            </div>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+
+        <a href="{{ url_for('shop.inventory') }}" class="shop-card" style="text-decoration:none;">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div class="shop-icon-wrap" style="background:rgba(217,119,6,0.08); color:var(--accent-amber);">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div class="shop-text"><h3>Inventory</h3><p>Your owned items</p></div>
+            </div>
+            <i class="fa-solid fa-arrow-right arrow-icon"></i>
+        </a>
+
+        <!-- Daily Tasks sidebar summary -->
+        <div class="card" style="margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                <h3 style="font-size:0.88rem; font-weight:700; margin:0;">📋 Today's Tasks</h3>
+                <span style="font-size:0.75rem; color:var(--text-muted);">Resets at midnight</span>
+            </div>
+            {% set done_count = namespace(n=0) %}
+            {% for task in daily_tasks %}{% if task.progress >= task.target %}{% set done_count.n = done_count.n + 1 %}{% endif %}{% endfor %}
+            <div style="text-align:center; margin-bottom:14px;">
+                <div style="font-size:2rem; font-weight:800; color:var(--accent-green);">{{ done_count.n }}/{{ daily_tasks|length }}</div>
+                <div style="font-size:0.78rem; color:var(--text-muted);">tasks completed</div>
+                <div style="margin-top:8px; background:var(--border-color); border-radius:20px; height:6px; overflow:hidden;">
+                    <div style="height:100%; width:{{ (done_count.n / daily_tasks|length * 100)|round|int }}%; background:var(--accent-green); border-radius:20px; transition:width 0.4s ease;"></div>
+                </div>
+            </div>
+            {% for task in daily_tasks %}
+            <div style="display:flex; align-items:center; gap:8px; padding:6px 0; {% if not loop.last %}border-bottom:1px solid var(--border-color);{% endif %}">
+                <div style="width:26px; height:26px; border-radius:6px; background:{{ 'var(--accent-green-dim)' if task.progress >= task.target else 'var(--bg-main)' }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    {% if task.progress >= task.target %}
+                    <i class="fa-solid fa-check" style="color:var(--accent-green); font-size:0.7rem;"></i>
+                    {% else %}
+                    <i class="fa-solid {{ task.icon }}" style="color:{{ task.color }}; font-size:0.7rem;"></i>
+                    {% endif %}
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:0.8rem; font-weight:600; {% if task.progress >= task.target %}color:var(--text-muted); text-decoration:line-through;{% endif %}">{{ task.title }}</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted);">+{{ task.reward }} pts reward</div>
+                </div>
+                <div style="font-size:0.72rem; font-weight:700; color:{{ 'var(--accent-green)' if task.progress >= task.target else 'var(--text-muted)' }}; flex-shrink:0;">
+                    {{ task.progress }}/{{ task.target }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Score milestone card -->
+        <div class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.88rem; font-weight:700; margin:0 0 14px;">🎯 Score Milestones</h3>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                {% for milestone, label in [(50,'Novice'),(100,'Apprentice'),(200,'Skilled'),(500,'Expert'),(1000,'Master')] %}
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+                            <span style="font-size:0.78rem; font-weight:600;">{{ label }}</span>
+                            <span style="font-size:0.75rem; color:var(--text-muted);">{{ milestone }} pts</span>
+                        </div>
+                        <div style="background:var(--border-color); border-radius:20px; height:5px; overflow:hidden;">
+                            <div style="height:100%; width:{{ [[(high_score / milestone * 100)|round|int, 0]|max, 100]|min }}%; background:{% if high_score >= milestone %}var(--accent-green){% else %}var(--accent-blue){% endif %}; border-radius:20px;"></div>
+                        </div>
+                    </div>
+                    {% if high_score >= milestone %}
+                    <span style="color:var(--accent-green); font-size:0.85rem;"><i class="fa-solid fa-check-circle"></i></span>
+                    {% else %}
+                    <span style="color:var(--text-muted); font-size:0.85rem;"><i class="fa-regular fa-circle"></i></span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── Full-width: Daily Tasks Detail + Achievements ──────────────────────── -->
+<div style="margin-top:24px; display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+    <!-- Daily Tasks (detailed) -->
+    <div class="card" style="margin-bottom:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <div>
+                <h3 style="font-size:1rem; font-weight:700; margin:0 0 2px;">📋 Daily Tasks</h3>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Complete tasks to earn bonus rewards. Resets each day.</p>
+            </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            {% for task in daily_tasks %}
+            {% set done = task.progress >= task.target %}
+            <div style="display:flex; align-items:center; gap:14px; padding:12px 14px; background:{{ 'var(--accent-green-dim)' if done else 'var(--bg-main)' }}; border:1px solid {{ 'rgba(22,163,74,0.2)' if done else 'var(--border-color)' }}; border-radius:8px;">
+                <div style="width:40px; height:40px; border-radius:10px; background:{{ 'var(--accent-green)' if done else 'var(--bg-card)' }}; border:1px solid {{ 'var(--accent-green)' if done else 'var(--border-color)' }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    {% if done %}
+                    <i class="fa-solid fa-check" style="color:#fff; font-size:0.95rem;"></i>
+                    {% else %}
+                    <i class="fa-solid {{ task.icon }}" style="color:{{ task.color }}; font-size:0.95rem;"></i>
+                    {% endif %}
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-weight:600; font-size:0.9rem; {% if done %}color:var(--accent-green);{% endif %}">{{ task.title }}</div>
+                    <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">{{ task.desc }}</div>
+                    <div style="margin-top:6px; background:var(--border-color); border-radius:20px; height:4px; overflow:hidden;">
+                        <div style="height:100%; width:{{ (task.progress / task.target * 100)|round|int }}%; background:{{ 'var(--accent-green)' if done else task.color }}; border-radius:20px;"></div>
+                    </div>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    <div style="font-size:0.78rem; font-weight:700; color:{{ 'var(--accent-green)' if done else 'var(--text-muted)' }};">{{ task.progress }}/{{ task.target }}</div>
+                    <div style="font-size:0.72rem; color:var(--text-muted); margin-top:2px;">+{{ task.reward }} pts</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="card" style="margin-bottom:0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <div>
+                <h3 style="font-size:1rem; font-weight:700; margin:0 0 2px;">🏅 Achievements</h3>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">{{ unlocked_count }} / {{ achievements|length }} unlocked</p>
+            </div>
+            <div style="background:var(--accent-green-dim); color:var(--accent-green); border:1px solid rgba(22,163,74,0.2); border-radius:20px; padding:4px 12px; font-size:0.78rem; font-weight:700;">
+                {{ ((unlocked_count / achievements|length) * 100)|round|int }}% complete
+            </div>
+        </div>
+
+        <!-- Achievement progress bar -->
+        <div style="background:var(--border-color); border-radius:20px; height:6px; overflow:hidden; margin-bottom:18px;">
+            <div style="height:100%; width:{{ ((unlocked_count / achievements|length) * 100)|round|int }}%; background:var(--accent-green); border-radius:20px; transition:width 0.4s ease;"></div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            {% for ach in achievements %}
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:{{ 'var(--bg-card)' if ach.unlocked else 'var(--bg-main)' }}; border:1px solid {{ 'var(--border-color)' if ach.unlocked else 'var(--border-color)' }}; border-radius:8px; opacity:{{ '1' if ach.unlocked else '0.5' }};">
+                <div style="width:36px; height:36px; border-radius:8px; background:{{ 'rgba(0,0,0,0.05)' if ach.unlocked else 'var(--border-color)' }}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    {% if ach.unlocked %}
+                    <i class="fa-solid {{ ach.icon }}" style="color:{{ ach.color }}; font-size:1rem;"></i>
+                    {% else %}
+                    <i class="fa-solid fa-lock" style="color:var(--text-muted); font-size:0.9rem;"></i>
+                    {% endif %}
+                </div>
+                <div style="min-width:0;">
+                    <div style="font-size:0.82rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ ach.title }}</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ ach.desc }}</div>
+                    <div style="margin-top:4px;">
+                        <span style="font-size:0.65rem; font-weight:700; padding:1px 6px; border-radius:20px;
+                            {% if ach.rarity == 'Common' %}background:rgba(100,116,139,0.1); color:#64748b;
+                            {% elif ach.rarity == 'Uncommon' %}background:rgba(37,99,235,0.1); color:#2563eb;
+                            {% elif ach.rarity == 'Rare' %}background:rgba(8,145,178,0.1); color:#0891b2;
+                            {% elif ach.rarity == 'Epic' %}background:rgba(124,58,237,0.1); color:#7c3aed;
+                            {% elif ach.rarity == 'Legendary' %}background:rgba(220,38,38,0.1); color:#dc2626;
+                            {% endif %}">{{ ach.rarity }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+

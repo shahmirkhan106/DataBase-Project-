@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Inventory – Online Games{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:24px;">
+    <h2 style="font-size:1.3rem; font-weight:700;">Your Inventory</h2>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">Items you own — use power-ups during gameplay with keys [1][2][3][4]</p>
+</div>
+
+{% if inventory_items %}
+    {% set current_group = namespace(game='') %}
+    {% for item in inventory_items %}
+        {% if item.game_type != current_group.game %}
+            {% if not loop.first %}</div>{% endif %}
+            <h3 style="font-size:1rem; font-weight:700; margin:24px 0 12px; display:flex; align-items:center; gap:8px;">
+                {% if item.game_type == 'snake' %}🐍 Snake
+                {% elif item.game_type == 'tetris' %}🟦 Tetris
+                {% elif item.game_type == 'hangman' %}🪢 Hangman
+                {% else %}{{ item.game_type|capitalize }}{% endif %}
+            </h3>
+            <div class="inventory-grid">
+            {% set current_group.game = item.game_type %}
+        {% endif %}
+
+        <div class="inv-item">
+            <div class="inv-icon">
+                {% if item.game_type == 'snake' %}
+                    <i class="fa-solid fa-star"></i>
+                {% elif item.game_type == 'tetris' %}
+                    <i class="fa-solid fa-bolt" style="color:#7c3aed;"></i>
+                {% elif item.game_type == 'hangman' %}
+                    <i class="fa-solid fa-lightbulb" style="color:var(--accent-amber);"></i>
+                {% else %}
+                    <i class="fa-solid fa-box"></i>
+                {% endif %}
+            </div>
+            <div class="inv-info">
+                <div class="inv-name">{{ item.item_name }}</div>
+                <div class="inv-qty">Qty: {{ item.quantity }}</div>
+            </div>
+            {% if item.quantity > 0 %}
+            <span class="badge badge-green" style="margin-left:auto;">Owned</span>
+            {% endif %}
+        </div>
+
+        {% if loop.last %}</div>{% endif %}
+    {% endfor %}
+{% else %}
+<div class="card" style="text-align:center; padding:48px;">
+    <i class="fa-solid fa-box-open" style="font-size:2.5rem; color:var(--text-muted); margin-bottom:16px;"></i>
+    <h3 style="font-weight:600;">Your inventory is empty</h3>
+    <p style="color:var(--text-muted); margin-bottom:20px;">Visit the shop to buy power-ups.</p>
+    <a href="{{ url_for('shop.shop_home') }}" class="btn btn-primary">Visit Shop</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Play – Snake Game{% endblock %}
+
+{% block top_right_tools %}
+<div class="anti-cheat-pill">
+    <i class="fa-solid fa-shield-check"></i> Anti-Cheat Active
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="arena-header-kpis">
+    <article class="kpi">
+        <div class="kpi-label">Score</div>
+        <div class="kpi-value green" id="score">0</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Game ID</div>
+        <div class="kpi-value" style="font-size:1rem;" id="game-id">—</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Status</div>
+        <div class="kpi-value" style="font-size:1rem;" id="game-status">Ready</div>
+    </article>
+</div>
+
+<div class="arena-layout">
+
+    <!-- Canvas -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+        <article class="arena-container">
+            <canvas id="gameCanvas" width="500" height="500"></canvas>
+        </article>
+
+        <!-- Chat Panel -->
+        <article class="card" style="margin-bottom:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h3 style="font-size:0.9rem; font-weight:600;"><i class="fa-solid fa-comments" style="color:var(--accent-blue); margin-right:6px;"></i>Match Chat</h3>
+                <button id="report-player-btn" class="btn btn-danger btn-sm" style="display:none;">
+                    <i class="fa-solid fa-flag"></i> Report
+                </button>
+            </div>
+            <div class="chat-log" id="chat-log">
+                <div class="chat-msg"><span class="chat-author sys">[System]</span> Chat is ready. Be respectful.</div>
+            </div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-input" placeholder="Type a message…" maxlength="200">
+                <button id="chat-send-btn" class="btn btn-primary btn-sm">Send</button>
+            </div>
+        </article>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="operations-panel">
+
+        <!-- Controls -->
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:14px;">Controls</h3>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+                <button id="new-game-btn" class="btn btn-primary btn-full">
+                    <i class="fa-solid fa-play"></i> New Game
+                </button>
+                <div class="op-grid">
+                    <button id="save-game-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-floppy-disk"></i> Save
+                    </button>
+                    <button id="load-game-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-folder-open"></i> Load
+                    </button>
+                </div>
+            </div>
+            <button id="end-game-btn" class="btn btn-danger btn-full">
+                <i class="fa-regular fa-circle-xmark"></i> End & Submit Score
+            </button>
+        </article>
+
+        <!-- Multiplayer -->
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:12px;">
+                <i class="fa-solid fa-users" style="color:var(--accent-blue); margin-right:6px;"></i>Multiplayer
+            </h3>
+            <div style="margin-bottom:10px;">
+                <label style="font-size:0.78rem; font-weight:600; color:var(--text-muted); display:block; margin-bottom:5px;">Opponent</label>
+                <select id="opponent-picker" class="skin-picker">
+                    <option value="">— Select player —</option>
+                </select>
+            </div>
+            <button id="start-duel-btn" class="btn btn-secondary btn-full" style="margin-bottom:10px;">
+                <i class="fa-solid fa-sword"></i> Start Duel
+            </button>
+            <label style="display:flex; align-items:center; gap:8px; font-size:0.82rem; cursor:pointer;">
+                <input type="checkbox" id="multiplayer-toggle" style="accent-color:var(--accent-green);">
+                <span>Local 2-Player (WASD + Arrows)</span>
+            </label>
+        </article>
+
+        <!-- Power-ups -->
+        <article class="card" style="margin-bottom:0;" id="powerups-panel">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:12px;">
+                <i class="fa-solid fa-bolt" style="color:var(--accent-amber); margin-right:6px;"></i>Power-ups
+                <span style="font-size:0.72rem; font-weight:400; color:var(--text-muted); margin-left:4px;">Press [1][2][3]</span>
+            </h3>
+            <div id="powerups-list">
+                <p style="font-size:0.82rem; color:var(--text-muted);">Loading inventory…</p>
+            </div>
+        </article>
+
+        <!-- Skin -->
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:10px;">Snake Skin</h3>
+            <select id="skin-picker" class="skin-picker">
+                <option value="classic">Classic Green</option>
+            </select>
+        </article>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/snake.js') }}"></script>
+{% endblock %}

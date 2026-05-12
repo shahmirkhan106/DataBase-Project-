@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Online Games{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+{% if session.get('user_id') %}
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-dice"></i>
+            <span>Online Games</span>
+        </div>
+
+        <div class="pilot-card">
+            <div class="pilot-avatar">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ session.get('username', 'P') }}&backgroundColor=f0fdf4" alt="avatar">
+            </div>
+            <div class="pilot-info">
+                <div class="pilot-name">{{ session.get('username', 'Player') }}</div>
+                <div class="pilot-rank">Player</div>
+            </div>
+        </div>
+
+        <nav class="side-nav">
+            <a href="{{ url_for('game.lobby') }}" class="{% if request.endpoint == 'game.lobby' %}active{% endif %}">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+            <a href="{{ url_for('game.dashboard') }}" class="{% if request.endpoint == 'game.dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-chart-simple"></i> Dashboard
+            </a>
+
+            <div style="padding: 8px 12px 4px; font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted);">Games</div>
+
+            <a href="{{ url_for('game.play') }}" class="{% if request.endpoint == 'game.play' %}active{% endif %}">
+                <i class="fa-solid fa-snake" style="font-size:0.8rem;"></i> Snake
+            </a>
+            <a href="{{ url_for('game.tetris') }}" class="{% if request.endpoint == 'game.tetris' %}active{% endif %}">
+                <i class="fa-solid fa-border-none"></i> Tetris
+            </a>
+            <a href="{{ url_for('game.hangman') }}" class="{% if request.endpoint == 'game.hangman' %}active{% endif %}">
+                <i class="fa-solid fa-person-falling"></i> Hangman
+            </a>
+
+            <div style="padding: 8px 12px 4px; font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted);">Rankings</div>
+
+            <a href="{{ url_for('game.leaderboard_overall') }}" class="{% if request.endpoint == 'game.leaderboard_overall' %}active{% endif %}">
+                <i class="fa-solid fa-earth-americas"></i> Overall
+            </a>
+            <a href="{{ url_for('game.leaderboard', game_type='snake') }}" class="{% if request.endpoint == 'game.leaderboard' and request.args.get('g') == 'snake' %}active{% endif %}">
+                <i class="fa-solid fa-trophy"></i> By Game
+            </a>
+
+            <div style="padding: 8px 12px 4px; font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted);">Store</div>
+
+            <a href="{{ url_for('shop.shop_home') }}" class="{% if request.endpoint == 'shop.shop_home' %}active{% endif %}">
+                <i class="fa-solid fa-cart-shopping"></i> Shop
+            </a>
+            <a href="{{ url_for('shop.inventory') }}" class="{% if request.endpoint == 'shop.inventory' %}active{% endif %}">
+                <i class="fa-solid fa-box-open"></i> Inventory
+            </a>
+
+            {% if session.get('role') == 'admin' %}
+            <div style="padding: 8px 12px 4px; font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-muted);">Admin</div>
+            <a href="{{ url_for('auth.admin_dashboard') }}" class="{% if request.endpoint == 'auth.admin_dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-shield-halved"></i> Admin Panel
+            </a>
+            {% endif %}
+
+            <div class="nav-spacer"></div>
+
+            <a href="{{ url_for('auth.logout') }}" class="logout-link">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+            </a>
+        </nav>
+    </aside>
+
+    <div class="content-shell">
+        <header class="shell-topbar">
+            <div class="brand-mobile">Online Games</div>
+            <nav class="top-nav">
+                <a href="{{ url_for('game.lobby') }}" class="{% if request.endpoint == 'game.lobby' %}active{% endif %}">Home</a>
+                <a href="{{ url_for('game.play') }}" class="{% if request.endpoint == 'game.play' %}active{% endif %}">Snake</a>
+                <a href="{{ url_for('game.tetris') }}" class="{% if request.endpoint == 'game.tetris' %}active{% endif %}">Tetris</a>
+                <a href="{{ url_for('game.hangman') }}" class="{% if request.endpoint == 'game.hangman' %}active{% endif %}">Hangman</a>
+            </nav>
+            <div class="top-tools">
+                {% block top_right_tools %}{% endblock %}
+            </div>
+        </header>
+        <main class="shell-main">
+{% else %}
+<div class="app-shell no-sidebar" style="background:var(--bg-main);">
+    <div class="content-shell">
+        <header class="shell-topbar">
+            <div class="brand">
+                <i class="fa-solid fa-dice"></i>
+                <span>Online Games</span>
+            </div>
+            <nav class="top-nav">
+                <a href="{{ url_for('auth.login') }}" class="{% if request.endpoint == 'auth.login' %}active{% endif %}">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="{% if request.endpoint == 'auth.register' %}active{% endif %}">Register</a>
+            </nav>
+        </header>
+        <main class="shell-main">
+{% endif %}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-list">
+                    {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

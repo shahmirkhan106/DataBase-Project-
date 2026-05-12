@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Tetris – Online Games{% endblock %}
+
+{% block top_right_tools %}
+<div class="anti-cheat-pill"><i class="fa-solid fa-shield-check"></i> Anti-Cheat Active</div>
+{% endblock %}
+
+{% block content %}
+<div class="arena-header-kpis">
+    <article class="kpi">
+        <div class="kpi-label">Score</div>
+        <div class="kpi-value" style="color:#7c3aed;" id="t-score">0</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Level</div>
+        <div class="kpi-value blue" id="t-level">1</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Lines</div>
+        <div class="kpi-value" id="t-lines">0</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Status</div>
+        <div class="kpi-value" style="font-size:0.95rem;" id="t-status">Ready</div>
+    </article>
+</div>
+
+<div class="arena-layout">
+    <!-- Canvas area -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+        <article class="arena-container">
+            <canvas id="tetrisCanvas"></canvas>
+        </article>
+        <article class="card" style="margin-bottom:0;">
+            <p style="font-size:0.78rem; color:var(--text-muted); margin:0; line-height:1.7;">
+                <kbd>←</kbd><kbd>→</kbd> Move &nbsp;|&nbsp; <kbd>↑</kbd> Rotate &nbsp;|&nbsp; <kbd>↓</kbd> Soft drop &nbsp;|&nbsp; <kbd>Space</kbd> Hard drop &nbsp;|&nbsp; <kbd>1</kbd>–<kbd>4</kbd> Power-ups
+            </p>
+        </article>
+    </div>
+
+    <!-- Right panel -->
+    <div class="operations-panel">
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:10px;">Next Piece</h3>
+            <canvas id="nextCanvas" width="96" height="96" style="border:1px solid var(--border-color); border-radius:8px; background:#f8fafc;"></canvas>
+        </article>
+
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:14px;">Controls</h3>
+            <button id="t-new-game-btn" class="btn btn-primary btn-full" style="margin-bottom:8px;"><i class="fa-solid fa-play"></i> New Game</button>
+            <button id="t-end-game-btn" class="btn btn-danger btn-full"><i class="fa-regular fa-circle-xmark"></i> End & Submit</button>
+        </article>
+
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:12px;">
+                <i class="fa-solid fa-bolt" style="color:var(--accent-amber); margin-right:6px;"></i>Power-ups
+                <span style="font-size:0.72rem; font-weight:400; color:var(--text-muted); margin-left:4px;">[1][2][3][4]</span>
+            </h3>
+            <div id="t-powerups-list"><p style="font-size:0.82rem; color:var(--text-muted);">Loading…</p></div>
+            <div id="t-pu-msg" style="font-size:0.8rem; color:var(--accent-green); margin-top:8px; min-height:18px; font-weight:600;"></div>
+        </article>
+
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:10px;">How to Play</h3>
+            <ul style="font-size:0.8rem; color:var(--text-muted); line-height:1.8; margin:0; padding-left:18px;">
+                <li>Stack falling pieces on the board</li>
+                <li>Clear full rows to score points</li>
+                <li>Higher levels = faster pieces</li>
+                <li>Hard-drop for bonus points</li>
+                <li>Game ends when pieces reach the top</li>
+            </ul>
+        </article>
+
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:10px;">Scoring</h3>
+            <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; gap:6px;">
+                <div style="display:flex; justify-content:space-between;"><span>1 line</span><span style="font-weight:700; color:var(--text-main);">100 × Level</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>2 lines</span><span style="font-weight:700; color:var(--text-main);">300 × Level</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>3 lines</span><span style="font-weight:700; color:var(--text-main);">500 × Level</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>Tetris (4)</span><span style="font-weight:700; color:#7c3aed;">800 × Level</span></div>
+            </div>
+        </article>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/tetris.js') }}"></script>
+{% endblock %}

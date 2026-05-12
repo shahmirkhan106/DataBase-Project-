@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Hangman – Online Games{% endblock %}
+
+{% block top_right_tools %}
+<div class="anti-cheat-pill"><i class="fa-solid fa-shield-check"></i> Anti-Cheat Active</div>
+{% endblock %}
+
+{% block content %}
+<div class="arena-header-kpis">
+    <article class="kpi">
+        <div class="kpi-label">Score</div>
+        <div class="kpi-value" style="color:var(--accent-amber);" id="h-score">0</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Lives Left</div>
+        <div class="kpi-value" style="color:var(--accent-red);" id="lives-left">6</div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label" id="word-category">Category: ???</div>
+        <div class="kpi-value blue" style="font-size:1rem; letter-spacing:3px;" id="wrong-letters"></div>
+    </article>
+    <article class="kpi">
+        <div class="kpi-label">Status</div>
+        <div class="kpi-value" style="font-size:0.95rem;" id="h-status">Ready</div>
+    </article>
+</div>
+
+<div class="arena-layout">
+    <div style="display:flex; flex-direction:column; gap:16px;">
+        <article class="arena-container" style="background:#f8fafc; padding:32px; display:flex; flex-direction:column; align-items:center;">
+            
+            <svg id="hangman-svg" width="200" height="200" style="margin-bottom:32px;"></svg>
+            
+            <div id="word-display" style="display:flex; justify-content:center; flex-wrap:wrap; margin-bottom:48px; min-height:44px;">
+                <!-- Word letters will appear here -->
+            </div>
+            
+            <div id="keyboard-area" style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px; max-width:400px;">
+                <!-- Keyboard buttons will appear here -->
+            </div>
+            
+        </article>
+    </div>
+
+    <!-- Right panel -->
+    <div class="operations-panel">
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:14px;">Controls</h3>
+            <button id="h-new-game-btn" class="btn btn-primary btn-full" style="margin-bottom:8px; background:var(--accent-amber); border-color:#b45309;"><i class="fa-solid fa-play"></i> New Game</button>
+            <button id="h-end-game-btn" class="btn btn-danger btn-full"><i class="fa-regular fa-circle-xmark"></i> End & Submit</button>
+        </article>
+
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:12px;">
+                <i class="fa-solid fa-bolt" style="color:var(--accent-amber); margin-right:6px;"></i>Power-ups
+                <span style="font-size:0.72rem; font-weight:400; color:var(--text-muted); margin-left:4px;">[1][2][3][4]</span>
+            </h3>
+            <div id="h-powerups-list"><p style="font-size:0.82rem; color:var(--text-muted);">Loading…</p></div>
+        </article>
+
+        <article class="card" style="margin-bottom:0;">
+            <h3 style="font-size:0.9rem; font-weight:600; margin-bottom:10px;">How to Play</h3>
+            <ul style="font-size:0.8rem; color:var(--text-muted); line-height:1.8; margin:0; padding-left:18px;">
+                <li>Guess the hidden word letter by letter.</li>
+                <li>Use physical keyboard or on-screen buttons.</li>
+                <li>6 wrong guesses = game over for that word.</li>
+                <li>Score = word length & remaining lives.</li>
+                <li>Survive as many words as you can in one run!</li>
+            </ul>
+        </article>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/hangman.js') }}"></script>
+{% endblock %}

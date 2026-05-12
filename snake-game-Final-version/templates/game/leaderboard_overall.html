@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Overall Leaderboard – Online Games{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+    <div>
+        <h2 style="font-size:1.3rem; font-weight:700;">Overall Leaderboard</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin:0;">Total combined score across all games</p>
+    </div>
+</div>
+
+<div style="display:flex; gap:12px; margin-bottom:24px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+    <a href="{{ url_for('game.leaderboard_overall') }}" class="btn btn-sm btn-primary"><i class="fa-solid fa-earth-americas"></i> Overall</a>
+    <a href="{{ url_for('game.leaderboard', g='snake') }}" class="btn btn-sm btn-secondary">🐍 Snake</a>
+    <a href="{{ url_for('game.leaderboard', g='tetris') }}" class="btn btn-sm btn-secondary">🟦 Tetris</a>
+    <a href="{{ url_for('game.leaderboard', g='hangman') }}" class="btn btn-sm btn-secondary">🪢 Hangman</a>
+</div>
+
+{% if leaderboard|length >= 3 %}
+<div class="podium" style="margin-bottom:24px;">
+    <div class="podium-item silver">
+        <div class="podium-rank">🥈</div>
+        <div class="podium-name">{{ leaderboard[1]['username'] }}</div>
+        <div class="podium-score">{{ leaderboard[1]['total_score'] }} pts</div>
+    </div>
+    <div class="podium-item gold">
+        <div class="podium-rank">🥇</div>
+        <div class="podium-name">{{ leaderboard[0]['username'] }}</div>
+        <div class="podium-score">{{ leaderboard[0]['total_score'] }} pts</div>
+    </div>
+    <div class="podium-item bronze">
+        <div class="podium-rank">🥉</div>
+        <div class="podium-name">{{ leaderboard[2]['username'] }}</div>
+        <div class="podium-score">{{ leaderboard[2]['total_score'] }} pts</div>
+    </div>
+</div>
+{% endif %}
+
+<div class="table-container">
+    <div class="table-header-row">
+        <h3><i class="fa-solid fa-earth-americas" style="color:var(--accent-blue); margin-right:6px;"></i> Global Top 50</h3>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:60px;">Rank</th>
+                <th>Player</th>
+                <th style="text-align:right;">🐍 Snake</th>
+                <th style="text-align:right;">🟦 Tetris</th>
+                <th style="text-align:right;">🪢 Hangman</th>
+                <th style="text-align:right;">Total Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in leaderboard %}
+            <tr {% if row['username'] == session.get('username') %}class="highlight-row"{% endif %}>
+                <td class="rank-col">
+                    {% if loop.index == 1 %}🥇
+                    {% elif loop.index == 2 %}🥈
+                    {% elif loop.index == 3 %}🥉
+                    {% else %}{{ loop.index }}{% endif %}
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ row['username'] }}&backgroundColor=f0fdf4" alt="" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border-color);">
+                        <span style="font-weight:500;">{{ row['username'] }}</span>
+                        {% if row['username'] == session.get('username') %}
+                        <span class="badge badge-green">You</span>
+                        {% endif %}
+                    </div>
+                </td>
+                <td style="text-align:right; color:var(--text-muted); font-size:0.85rem;">{{ row['snake_score'] }}</td>
+                <td style="text-align:right; color:var(--text-muted); font-size:0.85rem;">{{ row['tetris_score'] }}</td>
+                <td style="text-align:right; color:var(--text-muted); font-size:0.85rem;">{{ row['hangman_score'] }}</td>
+                <td class="score-col" style="font-size:1.1rem;">{{ row['total_score'] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:32px;">No scores yet. Start playing!</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
